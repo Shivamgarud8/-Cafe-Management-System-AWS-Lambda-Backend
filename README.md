@@ -102,3 +102,16 @@ cafe-management-system/
 GitHub: [shivamgarud8](https://github.com/shivamgarud8)  
 LinkedIn: [Shivam Garud](https://www.linkedin.com/in/shivam-garud-371b5a307)
 
+
+
+![Web-Page](images/ui2.png)
+![Dynamo db](images/db.png)
+![Iam](images/iam.png)
+![vs](images/vs.png)
+![lambda](images/lambda.png)
+![ui](images/ui.png)
+
+
+
+
+
