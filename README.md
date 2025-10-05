@@ -96,6 +96,7 @@ cafe-management-system/
 🌟 Contributors
 - **Trupti Mane Ma’am** – ⭐ AWS wizard & hands-on support, made testing and deployment seamless! [iamtruptimane](https://github.com/iamtruptimane)
 - **Shivam Garud** – DevOps & Cloud Engineer
+  
 **- 🔗 Links & Contact**
 
 GitHub: [shivamgarud8](https://github.com/shivamgarud8)  
