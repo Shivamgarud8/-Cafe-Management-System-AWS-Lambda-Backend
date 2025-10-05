@@ -1,12 +1,25 @@
-**# Cafe-Management-System-AWS-Lambda-Backend**
+# ☕ Cafe Management System – AWS Lambda Backend
 
-Serverless backend system to manage cafe orders in real-time. Orders are stored in DynamoDB and chefs receive SMS notifications instantly via SNS
+![AWS Lambda](https://img.shields.io/badge/AWS-Lambda-orange?logo=aws)
+![DynamoDB](https://img.shields.io/badge/AWS-DynamoDB-blue?logo=aws)
+![SNS](https://img.shields.io/badge/AWS-SNS-yellow?logo=aws)
+![Serverless](https://img.shields.io/badge/Serverless-Yes-green)
 
-**🚀 Project Overview**
-Users place orders with table number, items, and customizations.
-Orders are stored in DynamoDB.
-Chefs get real-time SMS notifications via SNS.
-Fully serverless using AWS Lambda.
+---
+
+## 🚀 Project Overview
+A **serverless backend system** to manage cafe orders in real-time.  
+Users place orders via a frontend, orders are saved in **DynamoDB**, and chefs receive **SMS notifications instantly via SNS**.  
+
+Key features:
+- Place orders with table number, items, and customizations.
+- Orders stored securely in DynamoDB.
+- Real-time SMS notifications to chefs via SNS.
+- Fully **serverless architecture** using AWS Lambda and IAM roles.
+
+---
+
+## 🛠️ Tech Stack & Services
 
 | Service        | Purpose                                      |
 | -------------- | -------------------------------------------- |
@@ -14,7 +27,11 @@ Fully serverless using AWS Lambda.
 | **DynamoDB**   | Stores all order records                     |
 | **SNS**        | Sends SMS notifications to chefs             |
 | **IAM Roles**  | Grants Lambda permissions for DynamoDB & SNS |
+| **API Gateway**| Triggers Lambda from frontend HTTP requests |
 
+---
+
+## 📦 Data Structure (DynamoDB)
 
 | Attribute   | Type   | Description              |
 | ----------- | ------ | ------------------------ |
@@ -25,35 +42,49 @@ Fully serverless using AWS Lambda.
 | total       | Number | Order total              |
 | timestamp   | String | ISO timestamp of order   |
 
+---
+
+## 🔧 Environment Variables
+
 | Variable Name   | Description                          |
 | --------------- | ------------------------------------ |
 | `DYNAMO_TABLE`  | DynamoDB table name (`CafeOrders`)   |
 | `SNS_TOPIC_ARN` | SNS topic ARN for chef notifications |
 
+---
 
-**📱 SNS Configuration**
-Topic Name: sns-for-sms
-Message Example:
-🍽️ New Order #1234 - Table 5
+## 📱 SNS Configuration
+- **Topic Name:** `sns-for-sms`
+- **Message Example:**
+- 🍽️ New Order #1234 - Table 5
 Items: Masala Dosa x2, Soda x1
 Custom: Extra Spicy
 Amount: ₹150
 
 
-**🔐 IAM Roles & Policies**
-Role Name Suggestion: CafeOrdersLambdaRole
-Required Policies:
-AmazonDynamoDBFullAccess (or least privilege with PutItem on CafeOrders)
-AmazonSNSFullAccess (or least privilege with Publish to SNS
-AWSLambdaBasicExecutionRole
+---
 
-🌐 Lambda Trigger Setup
-Create API Gateway HTTP API.
-Add a POST method pointing to Lambda.
-Enable CORS for frontend requests.
-Lambda processes the order and sends SNS notification.
+## 🔐 IAM Roles & Policies
+**Role Name Suggestion:** `CafeOrdersLambdaRole`  
 
-**📝 Folder Structure**
+**Required Policies:**  
+- `AmazonDynamoDBFullAccess` (or least privilege: PutItem on CafeOrders)  
+- `AmazonSNSFullAccess` (or least privilege: Publish to SNS)  
+- `AWSLambdaBasicExecutionRole`
+
+---
+
+## 🌐 Lambda Trigger Setup
+1. Create **API Gateway HTTP API**.
+2. Add a **POST method** pointing to the Lambda function.
+3. Enable **CORS** for frontend requests.
+4. Lambda processes the order and sends SNS notifications.
+
+
+
+**🗂️ Folder Structure**
+
+
 cafe-management-system/
 │
 ├─ lambda/
@@ -62,16 +93,11 @@ cafe-management-system/
 │   └─ index.html
 └─ README.md
 
-
 🌟 Contributors
- **Trupti Mane Ma`am** – ⭐ AWS wizard & hands-on support, made testing and deployment seamless! [@iamtruptimane](https://github.com/iamtruptimane)
+- **Trupti Mane Ma’am** – ⭐ AWS wizard & hands-on support, made testing and deployment seamless! [iamtruptimane](https://github.com/iamtruptimane)
+- **Shivam Garud** – DevOps & Cloud Engineer
+**- 🔗 Links & Contact**
 
-** 🔗 Links & Contact**
-GitHub: https://github.com/shivamgarud8
-LinkedIn: https://www.linkedin.com/in/shivam-garud-371b5a307
+GitHub: [shivamgarud8](https://github.com/shivamgarud8)  
+LinkedIn: [Shivam Garud](https://www.linkedin.com/in/shivam-garud-371b5a307)
 
-
-![Home Page](images/home.png)
-![Order Form](images/order-form.png)
-![Table Selection](images/table-selection.png)
-![Order Confirmation](images/order-confirmation.png)
