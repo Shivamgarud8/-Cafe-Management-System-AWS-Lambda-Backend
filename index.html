@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>☕ AWS Indian Nasta House</title>
+
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1301.0.min.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #ff9900 0%, #ffcc00 50%, #ff6600 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: white;
+      font-size: 2.8em;
+      margin-bottom: 10px;
+      text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+      animation: fadeInDown 0.8s ease;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: white;
+      font-size: 1.3em;
+      margin-bottom: 30px;
+      animation: fadeInDown 1s ease;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .order-form {
+      background: white;
+      border-radius: 20px;
+      padding: 35px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+      animation: fadeIn 1s ease;
+    }
+
+    .form-section {
+      margin-bottom: 30px;
+      padding: 25px;
+      background: linear-gradient(135deg, #fff8e1 0%, #ffe082 100%);
+      border-radius: 15px;
+      border: 3px solid #ff9900;
+    }
+
+    .form-section h3 {
+      color: #ff6600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.5em;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .table-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .table-box {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      border: 3px solid #ffcc00;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      font-weight: bold;
+      color: #ff6600;
+      font-size: 1.1em;
+    }
+
+    .table-box:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 8px 20px rgba(255, 153, 0, 0.4);
+      border-color: #ff6600;
+      animation: pulse 0.5s ease;
+    }
+
+    .table-box.selected {
+      background: linear-gradient(135deg, #ff9900, #ffcc00);
+      color: white;
+      border-color: #ff6600;
+      border-width: 4px;
+      transform: scale(1.05);
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .menu-item {
+      background: white;
+      padding: 18px;
+      border-radius: 12px;
+      border: 3px solid #ffcc00;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .menu-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(255, 153, 0, 0.4);
+      border-color: #ff6600;
+    }
+
+    .menu-item.selected {
+      background: linear-gradient(135deg, #fff8e1, #ffe082);
+      border-color: #ff6600;
+      border-width: 4px;
+    }
+
+    .menu-item-name {
+      font-weight: 600;
+      color: #ff6600;
+      margin-bottom: 8px;
+      font-size: 1.05em;
+    }
+
+    .menu-item-price {
+      color: #ff9900;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+
+    .quantity-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+      justify-content: center;
+    }
+
+    .quantity-btn {
+      background: linear-gradient(135deg, #ff9900, #ff6600);
+      color: white;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 10px rgba(255, 102, 0, 0.3);
+    }
+
+    .quantity-btn:hover {
+      transform: scale(1.15);
+      box-shadow: 0 5px 15px rgba(255, 102, 0, 0.5);
+    }
+
+    .quantity-display {
+      font-weight: bold;
+      min-width: 35px;
+      text-align: center;
+      color: #ff6600;
+      font-size: 1.1em;
+    }
+
+    .total-section {
+      background: linear-gradient(135deg, #ff9900, #ffcc00, #ff6600);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin-top: 25px;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(255, 102, 0, 0.4);
+    }
+
+    .total-amount {
+      font-size: 2.5em;
+      font-weight: bold;
+      margin: 15px 0;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .submit-btn {
+      background: white;
+      color: #ff6600;
+      border: none;
+      padding: 18px 50px;
+      font-size: 20px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      margin-top: 20px;
+      width: 100%;
+      font-weight: bold;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      animation: pulse 0.5s ease infinite;
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    #msg {
+      margin-top: 20px;
+      padding: 18px;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: bold;
+      animation: fadeIn 0.5s ease;
+      font-size: 1.1em;
+    }
+
+    .success {
+      background: #c8e6c9;
+      color: #2e7d32;
+      border: 3px solid #4caf50;
+    }
+
+    .error {
+      background: #ffcdd2;
+      color: #c62828;
+      border: 3px solid #f44336;
+    }
+
+    .category-tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      padding: 12px 25px;
+      background: white;
+      border: 3px solid #ffcc00;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      color: #ff6600;
+      font-size: 1.05em;
+    }
+
+    .tab-btn:hover {
+      background: linear-gradient(135deg, #fff8e1, #ffe082);
+      border-color: #ff6600;
+      transform: translateY(-2px);
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, #ff9900, #ffcc00);
+      color: white;
+      border-color: #ff6600;
+      box-shadow: 0 4px 15px rgba(255, 102, 0, 0.4);
+    }
+
+    .category-section {
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .category-section.active {
+      display: block;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 15px;
+      border: 3px solid #ffcc00;
+      border-radius: 12px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      font-family: inherit;
+      resize: vertical;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #ff6600;
+      box-shadow: 0 0 0 4px rgba(255, 153, 0, 0.2);
+    }
+
+    .subcategory-section {
+      margin-top: 20px;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      border: 3px dashed #ffcc00;
+    }
+
+    .subcategory-section h4 {
+      color: #ff6600;
+      margin-bottom: 15px;
+      font-size: 1.2em;
+    }
+
+    @media (max-width: 768px) {
+      .menu-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      }
+      
+      .table-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      }
+      
+      h1 {
+        font-size: 2em;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>☕ AWS Indian Nasta House</h1>
+    <p class="subtitle">🍛 Authentic Indian Flavors • Cloud-Powered Service ☁️</p>
+
+    <div class="order-form">
+      <form id="orderForm">
+        <!-- Table Selection -->
+        <div class="form-section">
+          <h3>🪑 Select Your Table</h3>
+          <div class="table-grid">
+            <div class="table-box" onclick="selectTable(1)">Table 1</div>
+            <div class="table-box" onclick="selectTable(2)">Table 2</div>
+            <div class="table-box" onclick="selectTable(3)">Table 3</div>
+            <div class="table-box" onclick="selectTable(4)">Table 4</div>
+            <div class="table-box" onclick="selectTable(5)">Table 5</div>
+            <div class="table-box" onclick="selectTable(6)">Table 6</div>
+            <div class="table-box" onclick="selectTable(7)">Table 7</div>
+            <div class="table-box" onclick="selectTable(8)">Table 8</div>
+            <div class="table-box" onclick="selectTable(9)">Table 9</div>
+          </div>
+        </div>
+
+        <!-- Menu Selection -->
+        <div class="form-section">
+          <h3>🍽️ Choose Your Items</h3>
+          
+          <div class="category-tabs">
+            <button type="button" class="tab-btn active" onclick="showCategory('beverages')">☕ Beverages</button>
+            <button type="button" class="tab-btn" onclick="showCategory('breakfast')">🍞 Breakfast</button>
+            <button type="button" class="tab-btn" onclick="showCategory('thali')">🍛 Thalis</button>
+            <button type="button" class="tab-btn" onclick="showCategory('rice')">🍚 Rice</button>
+            <button type="button" class="tab-btn" onclick="showCategory('sabji')">🥘 Sabji</button>
+            <button type="button" class="tab-btn" onclick="showCategory('breads')">🫓 Breads</button>
+            <button type="button" class="tab-btn" onclick="showCategory('chutney')">🥣 Chutney</button>
+          </div>
+
+          <!-- Beverages -->
+          <div id="beverages" class="category-section active">
+            <div class="menu-grid" id="beverages-grid"></div>
+          </div>
+
+          <!-- Breakfast -->
+          <div id="breakfast" class="category-section">
+            <div class="menu-grid" id="breakfast-grid"></div>
+          </div>
+
+          <!-- Thali with Subcategories -->
+          <div id="thali" class="category-section">
+            <div class="menu-grid" id="thali-grid"></div>
+          </div>
+
+          <!-- Rice with Subcategories -->
+          <div id="rice" class="category-section">
+            <div class="menu-grid" id="rice-grid"></div>
+          </div>
+
+          <!-- Sabji -->
+          <div id="sabji" class="category-section">
+            <div class="menu-grid" id="sabji-grid"></div>
+          </div>
+
+          <!-- Breads -->
+          <div id="breads" class="category-section">
+            <div class="menu-grid" id="breads-grid"></div>
+          </div>
+
+          <!-- Chutney -->
+          <div id="chutney" class="category-section">
+            <div class="menu-grid" id="chutney-grid"></div>
+          </div>
+        </div>
+
+        <!-- Special Requests -->
+        <div class="form-section">
+          <h3>✏️ Special Requests</h3>
+          <textarea id="custom" rows="4" placeholder="Tell us your preferences... Extra spicy, Less oil, No onion, Less sugar, Extra butter, Make it mild, etc."></textarea>
+        </div>
+
+        <!-- Total and Submit -->
+        <div class="total-section">
+          <div style="font-size: 1.3em;">💰 Total Amount</div>
+          <div class="total-amount">₹<span id="totalAmount">0</span></div>
+          <button type="submit" class="submit-btn">🚀 Place Order Now!</button>
+        </div>
+      </form>
+
+      <div id="msg"></div>
+    </div>
+  </div>
+
+  <script>
+    // Menu Data
+    const menuData = {
+      beverages: [
+        {name: "Masala Tea", price: 20},
+        {name: "Black Tea", price: 15},
+        {name: "Irani Chai", price: 25},
+        {name: "Black Coffee", price: 30},
+        {name: "Filter Coffee", price: 35},
+        {name: "Milk", price: 25},
+        {name: "Lassi (Sweet)", price: 40},
+        {name: "Lassi (Salted)", price: 40},
+        {name: "Mango Lassi", price: 50},
+        {name: "Buttermilk", price: 20}
+      ],
+      breakfast: [
+        {name: "Poha", price: 40},
+        {name: "Idli (3 pcs)", price: 30},
+        {name: "Vada (2 pcs)", price: 35},
+        {name: "Masala Dosa", price: 60},
+        {name: "Plain Dosa", price: 50},
+        {name: "Rava Dosa", price: 65},
+        {name: "Upma", price: 40},
+        {name: "Samosa (2 pcs)", price: 30},
+        {name: "Kachori (2 pcs)", price: 35},
+        {name: "Pav Bhaji", price: 70},
+        {name: "Misal Pav", price: 60},
+        {name: "Vada Pav", price: 25}
+      ],
+      thali: [
+        {name: "Regular Veg Thali", price: 120},
+        {name: "Special Veg Thali", price: 150},
+        {name: "Paneer Thali", price: 180},
+        {name: "Marathi Thali", price: 170},
+        {name: "Punjabi Thali", price: 200},
+        {name: "South Indian Thali", price: 160},
+        {name: "Rajasthani Thali", price: 190},
+        {name: "Gujarati Thali", price: 160}
+      ],
+      rice: [
+        {name: "Plain Rice", price: 50},
+        {name: "Jeera Rice", price: 70},
+        {name: "Veg Pulao", price: 90},
+        {name: "Veg Biryani", price: 140},
+        {name: "Paneer Biryani", price: 170},
+        {name: "Hyderabadi Biryani", price: 180},
+        {name: "Kashmiri Pulao", price: 100},
+        {name: "Curd Rice", price: 60},
+        {name: "Lemon Rice", price: 65},
+        {name: "Tomato Rice", price: 70}
+      ],
+      sabji: [
+        {name: "Paneer Butter Masala", price: 140},
+        {name: "Palak Paneer", price: 130},
+        {name: "Kadai Paneer", price: 140},
+        {name: "Shahi Paneer", price: 150},
+        {name: "Aloo Gobi", price: 90},
+        {name: "Mix Veg", price: 100},
+        {name: "Dal Tadka", price: 80},
+        {name: "Dal Fry", price: 70},
+        {name: "Chana Masala", price: 90},
+        {name: "Rajma Masala", price: 100},
+        {name: "Bhindi Masala", price: 90},
+        {name: "Baingan Bharta", price: 95},
+        {name: "Malai Kofta", price: 135},
+        {name: "Mushroom Masala", price: 120}
+      ],
+      breads: [
+        {name: "Tandoori Roti", price: 15},
+        {name: "Butter Roti", price: 20},
+        {name: "Plain Naan", price: 25},
+        {name: "Butter Naan", price: 30},
+        {name: "Garlic Naan", price: 40},
+        {name: "Cheese Naan", price: 50},
+        {name: "Paratha", price: 30},
+        {name: "Aloo Paratha", price: 40},
+        {name: "Paneer Paratha", price: 50},
+        {name: "Chapati (2 pcs)", price: 20}
+      ],
+      chutney: [
+        {name: "Green Chutney", price: 15},
+        {name: "Tamarind Chutney", price: 15},
+        {name: "Coconut Chutney", price: 20},
+        {name: "Mint Chutney", price: 15},
+        {name: "Tomato Chutney", price: 15},
+        {name: "Onion Chutney", price: 15},
+        {name: "Garlic Chutney", price: 20},
+        {name: "Mix Pickle", price: 10},
+        {name: "Mango Pickle", price: 10},
+        {name: "Lemon Pickle", price: 10},
+        {name: "Papad (2 pcs)", price: 15},
+        {name: "Green Salad", price: 30}
+      ]
+    };
+
+    let selectedTable = null;
+    let selectedItems = {};
+    let totalAmount = 0;
+
+    // Initialize menu
+    function initMenu() {
+      Object.keys(menuData).forEach(category => {
+        const grid = document.getElementById(`${category}-grid`);
+        menuData[category].forEach((item, index) => {
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'menu-item';
+          itemDiv.id = `${category}-${index}`;
+          itemDiv.innerHTML = `
+            <div class="menu-item-name">${item.name}</div>
+            <div class="menu-item-price">₹${item.price}</div>
+            <div class="quantity-control" style="display: none;">
+              <button type="button" class="quantity-btn" onclick="changeQuantity('${category}', ${index}, -1)">−</button>
+              <span class="quantity-display">0</span>
+              <button type="button" class="quantity-btn" onclick="changeQuantity('${category}', ${index}, 1)">+</button>
+            </div>
+          `;
+          
+          itemDiv.onclick = function(e) {
+            if (!e.target.classList.contains('quantity-btn')) {
+              toggleItem(category, index);
+            }
+          };
+          
+          grid.appendChild(itemDiv);
+        });
+      });
+    }
+
+    function selectTable(tableNum) {
+      document.querySelectorAll('.table-box').forEach(box => {
+        box.classList.remove('selected');
+      });
+      event.target.classList.add('selected');
+      selectedTable = tableNum;
+    }
+
+    function showCategory(category) {
+      document.querySelectorAll('.category-section').forEach(section => {
+        section.classList.remove('active');
+      });
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      document.getElementById(category).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    function toggleItem(category, index) {
+      const itemId = `${category}-${index}`;
+      const itemDiv = document.getElementById(itemId);
+      const quantityControl = itemDiv.querySelector('.quantity-control');
+      
+      if (!selectedItems[itemId]) {
+        selectedItems[itemId] = {
+          category: category,
+          index: index,
+          name: menuData[category][index].name,
+          price: menuData[category][index].price,
+          quantity: 1
+        };
+        itemDiv.classList.add('selected');
+        quantityControl.style.display = 'flex';
+        quantityControl.querySelector('.quantity-display').textContent = '1';
+      } else {
+        delete selectedItems[itemId];
+        itemDiv.classList.remove('selected');
+        quantityControl.style.display = 'none';
+      }
+      
+      updateTotal();
+    }
+
+    function changeQuantity(category, index, delta) {
+      const itemId = `${category}-${index}`;
+      if (selectedItems[itemId]) {
+        selectedItems[itemId].quantity += delta;
+        
+        if (selectedItems[itemId].quantity <= 0) {
+          delete selectedItems[itemId];
+          document.getElementById(itemId).classList.remove('selected');
+          document.getElementById(itemId).querySelector('.quantity-control').style.display = 'none';
+        } else {
+          document.getElementById(itemId).querySelector('.quantity-display').textContent = 
+            selectedItems[itemId].quantity;
+        }
+        
+        updateTotal();
+      }
+    }
+
+    function updateTotal() {
+      totalAmount = 0;
+      Object.values(selectedItems).forEach(item => {
+        totalAmount += item.price * item.quantity;
+      });
+      document.getElementById('totalAmount').textContent = totalAmount;
+    }
+
+    // AWS Configuration
+    AWS.config.update({
+      region: "ap-south-1",
+      accessKeyId: "add-your acces-id",
+      secretAccessKey: "add your secret key "
+    });
+
+    const dynamo = new AWS.DynamoDB.DocumentClient();
+    const sns = new AWS.SNS();
+
+    document.getElementById("orderForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      if (!selectedTable) {
+        showMessage("⚠️ Please select a table first!", "error");
+        return;
+      }
+
+      if (Object.keys(selectedItems).length === 0) {
+        showMessage("⚠️ Please select at least one item!", "error");
+        return;
+      }
+
+      const orderId = Date.now().toString();
+      const custom = document.getElementById("custom").value || "None";
+
+      const itemsList = Object.values(selectedItems).map(item => 
+        `${item.name} x${item.quantity}`
+      ).join(", ");
+
+      const orderData = {
+        orderId: orderId,
+        tableNumber: selectedTable.toString(),
+        items: itemsList,
+        custom: custom,
+        total: totalAmount,
+        timestamp: new Date().toISOString()
+      };
+
+      try {
+        await dynamo.put({
+          TableName: "CafeOrders",
+          Item: orderData
+        }).promise();
+
+        const message = `🍽️ New Order #${orderId.slice(-4)} - Table ${selectedTable}\nItems: ${itemsList}\nCustom: ${custom}\nAmount: ₹${totalAmount}`;
+        await sns.publish({
+          Message: message,
+          TopicArn: "arn:aws:sns:ap-south-1:474668386384:sns-for-sms"
+        }).promise();
+
+        showMessage("✅ Order placed successfully! Chef has been notified.", "success");
+        
+        // Reset form
+        selectedTable = null;
+        selectedItems = {};
+        totalAmount = 0;
+        document.querySelectorAll('.table-box').forEach(box => {
+          box.classList.remove('selected');
+        });
+        document.querySelectorAll('.menu-item').forEach(item => {
+          item.classList.remove('selected');
+          item.querySelector('.quantity-control').style.display = 'none';
+        });
+        updateTotal();
+        document.getElementById("custom").value = "";
+
+      } catch (err) {
+        console.error(err);
+        showMessage("❌ Error placing order. Please try again.", "error");
+      }
+    });
+
+    function showMessage(text, type) {
+      const msgDiv = document.getElementById("msg");
+      msgDiv.textContent = text;
+      msgDiv.className = type;
+      setTimeout(() => {
+        msgDiv.textContent = "";
+        msgDiv.className = "";
+      }, 5000);
+    }
+
+    // Initialize on load
+    initMenu();
+  </script>
+</body>
+</html>
